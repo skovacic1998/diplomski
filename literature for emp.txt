@@ -1,0 +1,11 @@
+https://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/DOM.pdf 
+https://tesla.carnet.hr/mod/book/view.php?id=5430&chapterid=885
+https://www.srce.unizg.hr/files/srce/docs/edu/osnovni-tecajevi/c201_polaznik.pdf
+https://developer.mozilla.org/en-US/docs/Web/HTML
+https://www.w3.org/TR/WD-DOM/introduction.html
+https://www.tutorialstonight.com/html/history-of-html.php
+https://www.washington.edu/accesscomputing/webd2/student/unit1/module3/html_history.html -support for javascript
+https://www.washington.edu/accesscomputing/webd2/student/unit2/common_tags.html
+https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/Getting_started
+https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/Getting_started#attributes
+https://www.javatpoint.com/html-head
