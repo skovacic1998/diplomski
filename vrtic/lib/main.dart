@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vrtic/screens/sign_in_screen.dart';
 
 void main() {
   runApp(const MainApp());
@@ -9,16 +10,15 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Navigation Drawer')),
+      home: SignInScreen()
+        /*appBar: AppBar(title: const Text('Navigation Drawer')),
         body: const Center(
           child: Text('Hello World!'),
         ),
-        drawer: const NavigationDrawer(),
-      ),
-    );
+        drawer: const NavigationDrawer(),*/
+      );
   }
 }
 
