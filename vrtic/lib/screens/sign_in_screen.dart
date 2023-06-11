@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vrtic/screens/sign_up_screen.dart';
 import 'package:vrtic/utils/color_utils.dart';
 
 import '../reusable_widgets/reusable_widget.dart';
@@ -11,8 +12,8 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  TextEditingController _passwordTextController = TextEditingController();
-  TextEditingController _emailTextController = TextEditingController();
+  final TextEditingController _passwordTextController = TextEditingController();
+  final TextEditingController _emailTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +52,35 @@ class _SignInScreenState extends State<SignInScreen> {
                   height: 20,
                 ),
                 signInSignUpButton(context, true, () {}),
+                signUpOption(),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Row signUpOption() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          "Don't have an account?",
+          style: TextStyle(color: Colors.white70),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const SignUpScreen()));
+          },
+          child: const Text(
+            " Sign Up",
+            style: TextStyle(
+                color: Colors.amber, fontWeight: FontWeight.bold),
+          ),
+        )
+      ],
     );
   }
 }
