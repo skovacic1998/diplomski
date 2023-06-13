@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:vrtic/screens/sign_in_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../auth.dart';
 
 import '../reusable_widgets/reusable_widget.dart';
 import '../utils/color_utils.dart';
@@ -12,12 +16,26 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+
+  String? errorMessage = '';
+  bool isLogin = true;
+
   final TextEditingController _userNameTextEditingController =
       TextEditingController();
   final TextEditingController _emailTextEditingController =
       TextEditingController();
   final TextEditingController _passwordTextEditingController =
       TextEditingController();
+
+  Future<void> createUserWithEmailAndPassword() async {
+    try {
+      await Auth().createUserWithEmailAndPassword(email: _emailTextEditingController.text, password: _passwordTextEditingController.text);
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,12 +84,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 reusableTextField("Enter password", Icons.lock_outline, true,
                     _passwordTextEditingController),
                 signInSignUpButton(context, false, () {
-                  Navigator.push(
+                  createUserWithEmailAndPassword().then((value) {
+                    print("Created new account");
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInScreen()));
+                  }).onError((error, stackTrace){
+                    print("Error ${error.toString()}");
+                  });
+                  /*Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const SignInScreen(),
                     ),
-                  );
+                  );*/
                 }),
               ],
             ),

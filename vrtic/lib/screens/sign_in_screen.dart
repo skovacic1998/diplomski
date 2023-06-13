@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:vrtic/screens/home_screen.dart';
 import 'package:vrtic/screens/sign_up_screen.dart';
 import 'package:vrtic/utils/color_utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
+import '../auth.dart';
 import '../reusable_widgets/reusable_widget.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -14,6 +17,17 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
+  String? errorMessage = '';
+
+  Future<void> signInWithEmailAndPassword() async {
+    try {
+      await Auth().signInWithEmailAndPassword(email: _emailTextController.text, password: _passwordTextController.text);
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +55,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 const SizedBox(
                   height: 30,
                 ),
-                reusableTextField("Enter username", Icons.person_outline, false,
+                reusableTextField("Enter email", Icons.person_outline, false,
                     _emailTextController),
                 const SizedBox(
                   height: 20,
@@ -51,7 +65,12 @@ class _SignInScreenState extends State<SignInScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-                signInSignUpButton(context, true, () {}),
+                signInSignUpButton(context, true, () {
+                  FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailTextController.text, password: _passwordTextController.text).then((value){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const HomeScreen()));
+                  });
+                  
+                }),
                 signUpOption(),
               ],
             ),
