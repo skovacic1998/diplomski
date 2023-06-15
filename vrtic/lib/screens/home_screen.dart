@@ -34,9 +34,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
+            DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.black,
+                gradient: LinearGradient(
+                  colors: [
+                    hexStringToColor("f4791f"),
+                    hexStringToColor("659999"),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
               child: Text('Da vidimo kak to zgleda'),
             ),
@@ -51,22 +58,23 @@ class _HomeScreenState extends State<HomeScreen> {
               onTap: () {
                 Navigator.pop(context);
               },
-            )
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              horizontalTitleGap : 3,
+              minLeadingWidth: 3,
+              onTap: () {
+                FirebaseAuth.instance.signOut().then((value) {
+                  print("Signed out");
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignInScreen()));
+                });
+              },
+            ),
           ],
-        ),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          child: const Text("Logout"),
-          onPressed: () {
-            FirebaseAuth.instance.signOut().then((value) {
-              print("Signed out");
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const SignInScreen()));
-            });
-          },
         ),
       ),
     );
