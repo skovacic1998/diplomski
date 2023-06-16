@@ -35,18 +35,28 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    hexStringToColor("f4791f"),
-                    hexStringToColor("659999"),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      hexStringToColor("f4791f"),
+                      hexStringToColor("659999"),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
-              ),
-              child: Text('Da vidimo kak to zgleda'),
-            ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.person_outlined),
+                        Text('User'),
+                      ],
+                    ),
+                    Text('Vrsta korisnika Roditelj/Teta'),
+                  ],
+                )),
             ListTile(
               title: const Text('Prvi page'),
               onTap: () {
@@ -62,11 +72,20 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),
-              horizontalTitleGap : 3,
+              horizontalTitleGap: 3,
               minLeadingWidth: 3,
               onTap: () {
                 FirebaseAuth.instance.signOut().then((value) {
-                  print("Signed out");
+                  SnackBar snackBar = SnackBar(
+                    backgroundColor: hexStringToColor("D37E1A"),
+                    duration: const Duration(seconds: 1),
+                    content: const Text(
+                      "Signed Out",
+                      style: TextStyle(fontSize: 22, color: Colors.black),
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   Navigator.push(
                       context,
                       MaterialPageRoute(

@@ -1,14 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:vrtic/screens/home_screen.dart';
 import 'package:vrtic/screens/sign_up_screen.dart';
 import 'package:vrtic/utils/color_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../auth.dart';
 import '../reusable_widgets/reusable_widget.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -21,24 +18,9 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
-  String? errorMessage = '';
-
-  Future<void> signInWithEmailAndPassword() async {
-    try {
-      await Auth().signInWithEmailAndPassword(
-          email: _emailTextController.text,
-          password: _passwordTextController.text);
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    SnackBar snackbar = const SnackBar(content: Text('ssss'));
-
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -89,9 +71,10 @@ class _SignInScreenState extends State<SignInScreen> {
                       );
                     } on FirebaseAuthException catch (e) {
                       SnackBar snackBar = SnackBar(
+                        backgroundColor: hexStringToColor("D37E1A"),
                         content: Text(
                           e.code,
-                          style: const TextStyle(fontSize: 22),
+                          style: const TextStyle(fontSize: 22, color: Colors.black),
                           textAlign: TextAlign.center,
                         ),
                       );

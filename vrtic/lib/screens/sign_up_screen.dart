@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -83,20 +85,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 reusableTextField("Enter password", Icons.lock_outline, true,
                     _passwordTextEditingController),
-                signInSignUpButton(context, false, () {
-                  createUserWithEmailAndPassword().then((value) {
-                    print("Created new account");
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInScreen()));
-                  }).onError((error, stackTrace){
-                    print("Error ${error.toString()}");
-                  });
-                  /*Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SignInScreen(),
-                    ),
-                  );*/
-                }),
+                signInSignUpButton(context, false, () async 
+                {
+                    try {
+                      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                          email: _emailTextEditingController.text,
+                          password: _passwordTextEditingController.text);
+                      return Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignInScreen(),
+                        ),
+                      );
+                    } on FirebaseAuthException catch (e) {
+                      SnackBar snackBar = SnackBar(
+                        backgroundColor: hexStringToColor("D37E1A"),
+                        content: Text(
+                          e.code,
+                          style: const TextStyle(fontSize: 22, color: Colors.black),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                      return ScaffoldMessenger.of(context)
+                          .showSnackBar(snackBar);
+                    }
+                  },)
               ],
             ),
           ),
