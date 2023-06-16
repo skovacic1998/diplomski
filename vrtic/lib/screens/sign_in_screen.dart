@@ -1,3 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:vrtic/screens/home_screen.dart';
 import 'package:vrtic/screens/sign_up_screen.dart';
@@ -21,7 +25,9 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<void> signInWithEmailAndPassword() async {
     try {
-      await Auth().signInWithEmailAndPassword(email: _emailTextController.text, password: _passwordTextController.text);
+      await Auth().signInWithEmailAndPassword(
+          email: _emailTextController.text,
+          password: _passwordTextController.text);
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -31,6 +37,8 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SnackBar snackbar = const SnackBar(content: Text('ssss'));
+
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -65,12 +73,33 @@ class _SignInScreenState extends State<SignInScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-                signInSignUpButton(context, true, () {
-                  FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailTextController.text, password: _passwordTextController.text).then((value){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const HomeScreen()));
-                  });
-                  
-                }),
+                signInSignUpButton(
+                  context,
+                  true,
+                  () async {
+                    try {
+                      await FirebaseAuth.instance.signInWithEmailAndPassword(
+                          email: _emailTextController.text,
+                          password: _passwordTextController.text);
+                      return Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreen(),
+                        ),
+                      );
+                    } on FirebaseAuthException catch (e) {
+                      SnackBar snackBar = SnackBar(
+                        content: Text(
+                          e.code,
+                          style: const TextStyle(fontSize: 22),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                      return ScaffoldMessenger.of(context)
+                          .showSnackBar(snackBar);
+                    }
+                  },
+                ),
                 signUpOption(),
               ],
             ),
@@ -95,8 +124,7 @@ class _SignInScreenState extends State<SignInScreen> {
           },
           child: const Text(
             " Sign Up",
-            style: TextStyle(
-                color: Colors.amber, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
           ),
         )
       ],
