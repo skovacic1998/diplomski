@@ -1,0 +1,6 @@
+{
+    "dart.debugExternalPackageLibraries": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    },  
+}
