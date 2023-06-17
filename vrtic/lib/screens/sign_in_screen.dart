@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vrtic/screens/home_screen.dart';
 import 'package:vrtic/screens/sign_up_screen.dart';
 import 'package:vrtic/utils/color_utils.dart';
@@ -8,19 +9,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../reusable_widgets/reusable_widget.dart';
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+final userProvider = StateProvider<User?>((ref) => null);
+
+class SignInScreen extends ConsumerWidget {
+  const SignInScreen({
+    super.key,
+  });
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final TextEditingController passwordTextController =
+        TextEditingController();
+    final TextEditingController emailTextController = TextEditingController();
 
-class _SignInScreenState extends State<SignInScreen> {
-  final TextEditingController _passwordTextController = TextEditingController();
-  final TextEditingController _emailTextController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -46,12 +47,12 @@ class _SignInScreenState extends State<SignInScreen> {
                   height: 30,
                 ),
                 reusableTextField("Enter email", Icons.person_outline, false,
-                    _emailTextController),
+                    emailTextController),
                 const SizedBox(
                   height: 20,
                 ),
                 reusableTextField("Enter password", Icons.lock_outline, true,
-                    _passwordTextController),
+                    passwordTextController),
                 const SizedBox(
                   height: 20,
                 ),
@@ -61,20 +62,21 @@ class _SignInScreenState extends State<SignInScreen> {
                   () async {
                     try {
                       await FirebaseAuth.instance.signInWithEmailAndPassword(
-                          email: _emailTextController.text,
-                          password: _passwordTextController.text);
-                      return Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
-                        ),
-                      );
+                          email: emailTextController.text,
+                          password: passwordTextController.text).then((value) => ref.read(userProvider.notifier).state = value.user);
+                    return Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomeScreen(),
+                      ),
+                    );
                     } on FirebaseAuthException catch (e) {
                       SnackBar snackBar = SnackBar(
                         backgroundColor: hexStringToColor("D37E1A"),
                         content: Text(
                           e.code,
-                          style: const TextStyle(fontSize: 22, color: Colors.black),
+                          style: const TextStyle(
+                              fontSize: 22, color: Colors.black),
                           textAlign: TextAlign.center,
                         ),
                       );
@@ -83,7 +85,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     }
                   },
                 ),
-                signUpOption(),
+                signUpOption(context),
               ],
             ),
           ),
@@ -92,7 +94,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Row signUpOption() {
+  Row signUpOption(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

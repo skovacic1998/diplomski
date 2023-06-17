@@ -1,19 +1,20 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vrtic/screens/sign_in_screen.dart';
 
 import '../utils/color_utils.dart';
-
-class HomeScreen extends StatefulWidget {
+/*
+final userProviderFromSignIn = StateProvider((ref) {
+  return ref.watch(userProvider);
+});
+*/
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Kindergarten Joy'),
@@ -45,13 +46,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     end: Alignment.bottomCenter,
                   ),
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
                         Icon(Icons.person_outlined),
-                        Text('User'),
+                          if(user == null)
+                            const Text(''),
+                          if(user != null)
+                            Text(user.email.toString()),
                       ],
                     ),
                     Text('Vrsta korisnika Roditelj/Teta'),
