@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vrtic/screens/sign_in_screen.dart';
 
 import '../utils/color_utils.dart';
+import 'adding_children_screen.dart';
 /*
 final userProviderFromSignIn = StateProvider((ref) {
   return ref.watch(userProvider);
@@ -51,7 +52,7 @@ class HomeScreen extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.person_outlined),
+                        const Icon(Icons.person_outlined),
                           if(user == null)
                             const Text(''),
                           if(user != null)
@@ -64,7 +65,7 @@ class HomeScreen extends ConsumerWidget {
             ListTile(
               title: const Text('Prvi page'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const AddChildren()));
               },
             ),
             ListTile(
