@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../reusable_widgets/reusable_widget.dart';
 import '../utils/color_utils.dart';
 
 class AddChildren extends StatefulWidget {
@@ -10,61 +11,39 @@ class AddChildren extends StatefulWidget {
 }
 
 class _AddChildrenState extends State<AddChildren> {
+  TextEditingController nameController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _customAppBar('Add children'),
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
           children: [
             Row(
               children: [
-                Text('Name: '),
-                SizedBox(
-                  width: 300,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                const Text('Child name:'),
+                const SizedBox(width: 8,),
+                Expanded(
+                  child: SizedBox(
+                    height: 50,
                     child: TextField(
+                      controller: nameController,
+                      cursorColor: Colors.black,
+                      style: TextStyle(color: Colors.black.withOpacity(0.9)),
                       decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Enter child name',
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text('Surname: '),
-                SizedBox(
-                  width: 300,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Enter child surname',
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text('Name: '),
-                SizedBox(
-                  width: 300,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Enter child name',
+                        labelStyle: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                        filled: true,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        fillColor: Colors.white.withOpacity(0.3),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                          borderSide:
+                              const BorderSide(width: 1, style: BorderStyle.none),
+                        ),
                       ),
                     ),
                   ),
