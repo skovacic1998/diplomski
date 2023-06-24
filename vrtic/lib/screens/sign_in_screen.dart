@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../reusable_widgets/reusable_widget.dart';
 
 final userProvider = StateProvider<User?>((ref) => null);
+final userCredentilasProvider = StateProvider<UserCredential?>((ref) => null);
 
 class SignInScreen extends ConsumerWidget {
   const SignInScreen({
@@ -63,7 +64,10 @@ class SignInScreen extends ConsumerWidget {
                     try {
                       await FirebaseAuth.instance.signInWithEmailAndPassword(
                           email: emailTextController.text,
-                          password: passwordTextController.text).then((value) => ref.read(userProvider.notifier).state = value.user);
+                          password: passwordTextController.text).then((value){
+                            ref.read(userProvider.notifier).state = value.user;
+                            ref.read(userCredentilasProvider.notifier).state = value;
+                          });
                     return Navigator.push(
                       context,
                       MaterialPageRoute(

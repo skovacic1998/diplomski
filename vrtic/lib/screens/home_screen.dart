@@ -65,7 +65,7 @@ class HomeScreen extends ConsumerWidget {
             ListTile(
               title: const Text('Prvi page'),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const AddChildren()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildren(currentUser: user)));
               },
             ),
             ListTile(

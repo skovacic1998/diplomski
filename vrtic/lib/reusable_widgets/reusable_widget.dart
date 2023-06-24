@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 Image logoWidget(String imageString) {
@@ -61,7 +62,7 @@ Container signInSignUpButton(
           return Colors.white;
         }),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),  
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         ),
       ),
       child: Text(
@@ -74,4 +75,71 @@ Container signInSignUpButton(
       ),
     ),
   );
+}
+
+class ChildObjectList extends StatelessWidget {
+  final String userId;
+
+  const ChildObjectList({super.key, required this.userId});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const CircularProgressIndicator(); // Display a loading indicator while data is being fetched
+        }
+
+        if (!snapshot.data!.exists) {
+          return const Text(
+              'User not found'); // Handle case when the user document doesn't exist
+        }
+
+        // Access the 'children' field from the user document
+        List<dynamic>? children =
+            (snapshot.data!.data() as Map<String, dynamic>?)?['children'];
+        if (children == null || children.isEmpty) {
+          return const Text(
+              'No children found'); // Handle case when the 'children' field is empty or not available
+        }
+
+        return ListView.builder(
+          itemCount: children.length,
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          //     return Card(
+          //       child: SizedBox(
+          //         width: double.infinity,
+          //         height: 100,
+          //         child: Center(child: Text(names[number])),
+          //       ),
+          //     );
+          //   },
+          itemBuilder: (context, index) {
+            // Access each child object within the 'children' list
+            dynamic child = children[index];
+            return Card(
+              child: SizedBox(
+                width: double.infinity,
+                height: 100,
+                child: Center(
+                  child: Column(
+                    children: [
+                      Text(child['name']),
+                      Text(child['sex'].toString()),
+                      Text(child['surname']),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 }

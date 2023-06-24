@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vrtic/screens/sign_in_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,7 +19,6 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-
   String? errorMessage = '';
   bool isLogin = true;
 
@@ -31,7 +31,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Future<void> createUserWithEmailAndPassword() async {
     try {
-      await Auth().createUserWithEmailAndPassword(email: _emailTextEditingController.text, password: _passwordTextEditingController.text);
+      await Auth().createUserWithEmailAndPassword(
+          email: _emailTextEditingController.text,
+          password: _passwordTextEditingController.text);
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -85,12 +87,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 reusableTextField("Enter password", Icons.lock_outline, true,
                     _passwordTextEditingController),
-                signInSignUpButton(context, false, () async 
-                {
+                signInSignUpButton(
+                  context,
+                  false,
+                  () async {
                     try {
-                      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                          email: _emailTextEditingController.text,
-                          password: _passwordTextEditingController.text);
+                      final userCredentials = await FirebaseAuth.instance
+                          .createUserWithEmailAndPassword(
+                              email: _emailTextEditingController.text,
+                              password: _passwordTextEditingController.text);
+                      await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(userCredentials.user!.uid)
+                          .set({
+                            'username': _userNameTextEditingController.text,
+                            'email': _emailTextEditingController.text,
+                            'isParent': 1,
+                            'children': [],
+                          });
                       return Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -102,14 +116,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         backgroundColor: hexStringToColor("D37E1A"),
                         content: Text(
                           e.code,
-                          style: const TextStyle(fontSize: 22, color: Colors.black),
+                          style: const TextStyle(
+                              fontSize: 22, color: Colors.black),
                           textAlign: TextAlign.center,
                         ),
                       );
                       return ScaffoldMessenger.of(context)
                           .showSnackBar(snackBar);
                     }
-                  },)
+                  },
+                )
               ],
             ),
           ),

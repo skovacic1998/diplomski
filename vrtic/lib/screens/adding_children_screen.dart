@@ -1,21 +1,24 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vrtic/models/child.dart';
+import 'package:vrtic/providers/add_children_provider.dart';
+import 'package:vrtic/reusable_widgets/reusable_widget.dart';
+
 
 import '../utils/color_utils.dart';
 
-class AddChildren extends StatefulWidget {
-  const AddChildren({super.key});
-
-  @override
-  State<AddChildren> createState() => _AddChildrenState();
-}
-
-class _AddChildrenState extends State<AddChildren> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController surnameController = TextEditingController();
-  int? selectedOption = 0;
-  List<String> names = ['pero', 'marica', 'barica'];
+class AddChildren extends StatelessWidget {
+  const AddChildren({super.key, required this.currentUser});
+  final User? currentUser;
   @override
   Widget build(BuildContext context) {
+    int childTypeForSend = 0;
+    TextEditingController nameController = TextEditingController();
+    TextEditingController surnameController = TextEditingController();
     return Scaffold(
       appBar: _customAppBar('Add children'),
       body: Padding(
@@ -94,31 +97,47 @@ class _AddChildrenState extends State<AddChildren> {
                 const SizedBox(
                   width: 8,
                 ),
-                Radio(
-                  value: 0,
-                  groupValue: selectedOption,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedOption = value;
-                    });
+                Consumer(
+                  builder: (context, ref, child) {
+                    final childType = ref.watch(childTypeProvider);
+                    return Radio(
+                        value: 0,
+                        groupValue: childType,
+                        onChanged: (value) {
+                          childTypeForSend = value!;
+                          ref.read(childTypeProvider.notifier).state = value;
+                        });
                   },
                 ),
                 const Text('Male'),
                 const SizedBox(width: 20),
-                Radio(
-                  value: 1,
-                  groupValue: selectedOption,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedOption = value;
-                    });
+                Consumer(
+                  builder: (context, ref, child) {
+                    final childType = ref.watch(childTypeProvider);
+                    return Radio(
+                        value: 1,
+                        groupValue: childType,
+                        onChanged: (value) {
+                          childTypeForSend = value!;
+                          ref.read(childTypeProvider.notifier).state = value;
+                        });
                   },
                 ),
                 const Text('Female'),
               ],
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                Child newChild = Child(
+                  name: nameController.text,
+                  surname: surnameController.text,
+                  sex: childTypeForSend,
+                );
+                String jsonUser = jsonEncode(newChild);
+                await FirebaseFirestore.instance.collection('child').doc().set(newChild.getMap());
+                await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid.toString()).update({"children":FieldValue.arrayUnion([newChild.getMap()])});
+                print(jsonUser);
+              },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.resolveWith((states) {
                   if (states.contains(MaterialState.pressed)) {
@@ -136,20 +155,23 @@ class _AddChildrenState extends State<AddChildren> {
                 style: TextStyle(color: Colors.black),
               ),
             ),
-            SingleChildScrollView(
-              child: ListView.builder(
-                shrinkWrap: true,
-                scrollDirection: Axis.vertical,
-                itemCount: names.length,
-                itemBuilder: (BuildContext ctx, number) {
-                  return Card(
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 100,
-                      child: Center(child: Text(names[number])),
-                    ),
-                  );
-                },
+            Expanded(
+              child: SingleChildScrollView(
+                child: ChildObjectList(userId: currentUser!.uid),
+                // child: ListView.builder(
+                //   shrinkWrap: true,
+                //   scrollDirection: Axis.vertical,
+                //   itemCount: names.length,
+                //   itemBuilder: (BuildContext ctx, number) {
+                //     return Card(
+                //       child: SizedBox(
+                //         width: double.infinity,
+                //         height: 100,
+                //         child: Center(child: Text(names[number])),
+                //       ),
+                //     );
+                //   },
+                // ),
               ),
             ),
           ],
