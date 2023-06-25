@@ -1,7 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vrtic/models/user.dart' as user_model;
+import 'package:vrtic/providers/user_provider.dart';
 import 'package:vrtic/screens/home_screen.dart';
 import 'package:vrtic/screens/sign_up_screen.dart';
 import 'package:vrtic/utils/color_utils.dart';
@@ -9,8 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../reusable_widgets/reusable_widget.dart';
 
-final userProvider = StateProvider<User?>((ref) => null);
-final userCredentilasProvider = StateProvider<UserCredential?>((ref) => null);
+final userFromAuth = StateProvider<User?>((ref) => null);
 
 class SignInScreen extends ConsumerWidget {
   const SignInScreen({
@@ -22,6 +24,8 @@ class SignInScreen extends ConsumerWidget {
     final TextEditingController passwordTextController =
         TextEditingController();
     final TextEditingController emailTextController = TextEditingController();
+
+    late user_model.User? user;
 
     return Scaffold(
       body: Container(
@@ -65,8 +69,11 @@ class SignInScreen extends ConsumerWidget {
                       await FirebaseAuth.instance.signInWithEmailAndPassword(
                           email: emailTextController.text,
                           password: passwordTextController.text).then((value){
-                            ref.read(userProvider.notifier).state = value.user;
-                            ref.read(userCredentilasProvider.notifier).state = value;
+                            ref.read(userFromAuth.notifier).state = value.user;
+                            FirebaseFirestore.instance.collection('users').doc(value.user!.uid).get().then((value) => {
+                              user = user_model.User(username: value['username'], email: value['email'], isParent: value['isParent'], children: value['children']),
+                              ref.read(userProvider.notifier).state = user
+                            });
                           });
                     return Navigator.push(
                       context,

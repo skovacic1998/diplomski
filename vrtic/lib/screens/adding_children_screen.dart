@@ -13,7 +13,7 @@ import '../utils/color_utils.dart';
 
 class AddChildren extends StatelessWidget {
   const AddChildren({super.key, required this.currentUser});
-  final User? currentUser;
+  final User currentUser;
   @override
   Widget build(BuildContext context) {
     int childTypeForSend = 0;
@@ -158,20 +158,6 @@ class AddChildren extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 child: ChildObjectList(userId: currentUser!.uid),
-                // child: ListView.builder(
-                //   shrinkWrap: true,
-                //   scrollDirection: Axis.vertical,
-                //   itemCount: names.length,
-                //   itemBuilder: (BuildContext ctx, number) {
-                //     return Card(
-                //       child: SizedBox(
-                //         width: double.infinity,
-                //         height: 100,
-                //         child: Center(child: Text(names[number])),
-                //       ),
-                //     );
-                //   },
-                // ),
               ),
             ),
           ],

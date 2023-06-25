@@ -91,48 +91,43 @@ class ChildObjectList extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const CircularProgressIndicator(); // Display a loading indicator while data is being fetched
+          return const CircularProgressIndicator();
         }
 
         if (!snapshot.data!.exists) {
           return const Text(
-              'User not found'); // Handle case when the user document doesn't exist
+              'User not found');
         }
 
-        // Access the 'children' field from the user document
         List<dynamic>? children =
             (snapshot.data!.data() as Map<String, dynamic>?)?['children'];
         if (children == null || children.isEmpty) {
           return const Text(
-              'No children found'); // Handle case when the 'children' field is empty or not available
+              'No children found');
         }
 
         return ListView.builder(
           itemCount: children.length,
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
-          //     return Card(
-          //       child: SizedBox(
-          //         width: double.infinity,
-          //         height: 100,
-          //         child: Center(child: Text(names[number])),
-          //       ),
-          //     );
-          //   },
           itemBuilder: (context, index) {
-            // Access each child object within the 'children' list
             dynamic child = children[index];
             return Card(
-              child: SizedBox(
-                width: double.infinity,
-                height: 100,
-                child: Center(
-                  child: Column(
-                    children: [
-                      Text(child['name']),
-                      Text(child['sex'].toString()),
-                      Text(child['surname']),
-                    ],
+              child: OutlinedButton(
+                onPressed: () {
+                  _dialogBuilder(context, child);
+                },
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 100,
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Text(child['name']),
+                        checkChildSex(child['sex'].toString()),
+                        Text(child['surname']),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -141,5 +136,90 @@ class ChildObjectList extends StatelessWidget {
         );
       },
     );
+  }
+
+  void deleteChildFromChildTable(String childName, String childSurname){
+    FirebaseFirestore.instance
+      .collection('child')
+      .where('name', isEqualTo: childName)
+      .where('surname', isEqualTo: childSurname)
+      .get()
+      .then((querySnapshot) {
+        if (querySnapshot.docs.isNotEmpty) {
+          for (var doc in querySnapshot.docs) {
+            doc.reference.delete();
+          }
+        } else {
+          print('Child not found');
+        }
+      });
+  }
+
+  void deleteChildByNameAndSurname(
+      String userId, String childName, String childSurname) {
+    FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .get()
+      .then((docSnapshot) {
+        if (docSnapshot.exists) {
+          List<dynamic>? children = docSnapshot.data()?['children'];
+
+          if (children != null && children is List) {
+            children.removeWhere((child) => child['name'] == childName && child['surname'] == childSurname);
+
+            FirebaseFirestore.instance
+                .collection('users')
+                .doc(userId)
+                .update({'children': children})
+                .then((_) => print('Child deleted successfully'))
+                .catchError((error) => print('Failed to delete child: $error'));
+          }
+        }
+      });
+  }
+
+  Future<void> _dialogBuilder(BuildContext context, dynamic child) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Remove child?'),
+          content: const Text(
+            'Do you wish to remove this child from our database?'
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('Yes'),
+              onPressed: () {
+                  deleteChildFromChildTable(child['name'], child['surname']);
+                  deleteChildByNameAndSurname(userId, child['name'], child['surname']);
+                  Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  
+  Text checkChildSex(String sex) {
+    if(sex == "0"){
+      return const Text("Male");
+    }else{
+      return const Text("Female");
+    }
   }
 }

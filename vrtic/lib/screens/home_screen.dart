@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vrtic/providers/user_provider.dart';
+import 'package:vrtic/models/user.dart' as user_model;
 import 'package:vrtic/screens/sign_in_screen.dart';
 
 import '../utils/color_utils.dart';
@@ -15,7 +17,8 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
+    final user_model.User? user = ref.watch(userProvider);
+    final firebaseUser = ref.watch(userFromAuth);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Kindergarten Joy'),
@@ -56,16 +59,16 @@ class HomeScreen extends ConsumerWidget {
                           if(user == null)
                             const Text(''),
                           if(user != null)
-                            Text(user.email.toString()),
+                            Text(user.username.toString()),
                       ],
                     ),
-                    Text('Vrsta korisnika Roditelj/Teta'),
+                    userType(user),
                   ],
                 )),
             ListTile(
-              title: const Text('Prvi page'),
+              title: const Text('Add children'),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildren(currentUser: user)));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildren(currentUser: firebaseUser!)));
               },
             ),
             ListTile(
@@ -103,4 +106,16 @@ class HomeScreen extends ConsumerWidget {
       ),
     );
   }
+
+  Text userType(user_model.User? user){
+    if(user != null){
+      if(user.isParent == 0){
+        return const Text('Keeper');
+      } else {
+        return const Text('Parent');
+      }
+    }else{
+      return const Text("");
+    }
+  } 
 }
