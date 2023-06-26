@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vrtic/providers/user_provider.dart';
 import 'package:vrtic/models/user.dart' as user_model;
+import 'package:vrtic/screens/evidention_screen.dart';
 import 'package:vrtic/screens/sign_in_screen.dart';
 
 import '../utils/color_utils.dart';
@@ -74,7 +75,7 @@ class HomeScreen extends ConsumerWidget {
             ListTile(
               title: const Text('Drugi page'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> const EvidentionScreen()));
               },
             ),
             ListTile(

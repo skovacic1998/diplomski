@@ -8,9 +8,6 @@ import 'package:vrtic/models/child.dart';
 import 'package:vrtic/providers/add_children_provider.dart';
 import 'package:vrtic/reusable_widgets/reusable_widget.dart';
 
-
-import '../utils/color_utils.dart';
-
 class AddChildren extends StatelessWidget {
   const AddChildren({super.key, required this.currentUser});
   final User currentUser;
@@ -20,7 +17,7 @@ class AddChildren extends StatelessWidget {
     TextEditingController nameController = TextEditingController();
     TextEditingController surnameController = TextEditingController();
     return Scaffold(
-      appBar: _customAppBar('Add children'),
+      appBar: customAppBar('Add children'),
       body: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
@@ -135,7 +132,7 @@ class AddChildren extends StatelessWidget {
                 );
                 String jsonUser = jsonEncode(newChild);
                 await FirebaseFirestore.instance.collection('child').doc().set(newChild.getMap());
-                await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid.toString()).update({"children":FieldValue.arrayUnion([newChild.getMap()])});
+                await FirebaseFirestore.instance.collection('users').doc(currentUser.uid.toString()).update({"children":FieldValue.arrayUnion([newChild.getMap()])});
                 print(jsonUser);
               },
               style: ButtonStyle(
@@ -157,7 +154,7 @@ class AddChildren extends StatelessWidget {
             ),
             Expanded(
               child: SingleChildScrollView(
-                child: ChildObjectList(userId: currentUser!.uid),
+                child: ChildObjectList(userId: currentUser.uid),
               ),
             ),
           ],
@@ -165,22 +162,4 @@ class AddChildren extends StatelessWidget {
       ),
     );
   }
-}
-
-AppBar _customAppBar(String text) {
-  return AppBar(
-    title: Text(text),
-    flexibleSpace: Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            hexStringToColor("f4791f"),
-            hexStringToColor("659999"),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-    ),
-  );
 }

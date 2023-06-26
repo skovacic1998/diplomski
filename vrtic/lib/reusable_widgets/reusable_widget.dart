@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/color_utils.dart';
+
 Image logoWidget(String imageString) {
   return Image.asset(
     imageString,
@@ -165,7 +167,7 @@ class ChildObjectList extends StatelessWidget {
         if (docSnapshot.exists) {
           List<dynamic>? children = docSnapshot.data()?['children'];
 
-          if (children != null && children is List) {
+          if (children != null) {
             children.removeWhere((child) => child['name'] == childName && child['surname'] == childSurname);
 
             FirebaseFirestore.instance
@@ -222,4 +224,22 @@ class ChildObjectList extends StatelessWidget {
       return const Text("Female");
     }
   }
+}
+
+AppBar customAppBar(String text) {
+  return AppBar(
+    title: Text(text),
+    flexibleSpace: Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            hexStringToColor("f4791f"),
+            hexStringToColor("659999"),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+    ),
+  );
 }
