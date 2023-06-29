@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vrtic/providers/evidention_provider.dart';
 
 import '../utils/color_utils.dart';
 
@@ -79,6 +81,87 @@ Container signInSignUpButton(
   );
 }
 
+class ChildObjectListMultiSelect extends ConsumerWidget {
+  const ChildObjectListMultiSelect({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedItems = ref.watch(selectedChildrenProvider);
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('child').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        final children = snapshot.data?.docs;
+
+        if (children == null || children.isEmpty) {
+          return const Text('No children found.');
+        }
+
+        return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: children.length,
+              itemBuilder: (context, index) {
+                final child = children[index].data() as Map<String, dynamic>;
+                final childName = child['name'];
+                final childSurname = child['surname'];
+                return ListTile(
+                  tileColor: selectedItems.contains(index)
+                      ? Colors.blue.withOpacity(0.5)
+                      : Colors.transparent,
+                  onTap: () {
+                    if (!selectedItems.contains(index)) {
+                      ref.read(selectedChildrenProvider.notifier).state = [...selectedItems, index];
+                    }
+                  },
+                  onLongPress: () {
+                    ref.read(selectedChildrenProvider.notifier).state = [
+                      ...selectedItems.where((item) => item != index),
+                    ];
+                  },
+                  leading: const Icon(
+                    Icons.child_care,
+                    size: 40,
+                  ),
+                  title: Text('$childName'),
+                  subtitle: Row(
+                    children: [
+                      Text(childSurname),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      checkChildSex(
+                        child['sex'].toString(),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          );
+      },
+    );
+  }
+
+  double calculateListViewHeight(int itemCount, BuildContext context) {
+    const listTileHeight = 56.0;
+    final totalHeight = listTileHeight * itemCount;
+    final maxHeight = MediaQuery.of(context).size.height * 0.6;
+    return totalHeight > maxHeight ? maxHeight : totalHeight;
+  }
+}
+
 class ChildObjectList extends StatelessWidget {
   final String userId;
 
@@ -97,15 +180,13 @@ class ChildObjectList extends StatelessWidget {
         }
 
         if (!snapshot.data!.exists) {
-          return const Text(
-              'User not found');
+          return const Text('User not found');
         }
 
         List<dynamic>? children =
             (snapshot.data!.data() as Map<String, dynamic>?)?['children'];
         if (children == null || children.isEmpty) {
-          return const Text(
-              'No children found');
+          return const Text('No children found');
         }
 
         return ListView.builder(
@@ -140,45 +221,46 @@ class ChildObjectList extends StatelessWidget {
     );
   }
 
-  void deleteChildFromChildTable(String childName, String childSurname){
+  void deleteChildFromChildTable(String childName, String childSurname) {
     FirebaseFirestore.instance
-      .collection('child')
-      .where('name', isEqualTo: childName)
-      .where('surname', isEqualTo: childSurname)
-      .get()
-      .then((querySnapshot) {
-        if (querySnapshot.docs.isNotEmpty) {
-          for (var doc in querySnapshot.docs) {
-            doc.reference.delete();
-          }
-        } else {
-          print('Child not found');
+        .collection('child')
+        .where('name', isEqualTo: childName)
+        .where('surname', isEqualTo: childSurname)
+        .get()
+        .then((querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs) {
+          doc.reference.delete();
         }
-      });
+      } else {
+        print('Child not found');
+      }
+    });
   }
 
   void deleteChildByNameAndSurname(
       String userId, String childName, String childSurname) {
     FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .get()
-      .then((docSnapshot) {
-        if (docSnapshot.exists) {
-          List<dynamic>? children = docSnapshot.data()?['children'];
+        .collection('users')
+        .doc(userId)
+        .get()
+        .then((docSnapshot) {
+      if (docSnapshot.exists) {
+        List<dynamic>? children = docSnapshot.data()?['children'];
 
-          if (children != null) {
-            children.removeWhere((child) => child['name'] == childName && child['surname'] == childSurname);
+        if (children != null) {
+          children.removeWhere((child) =>
+              child['name'] == childName && child['surname'] == childSurname);
 
-            FirebaseFirestore.instance
-                .collection('users')
-                .doc(userId)
-                .update({'children': children})
-                .then((_) => print('Child deleted successfully'))
-                .catchError((error) => print('Failed to delete child: $error'));
-          }
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .update({'children': children})
+              .then((_) => print('Child deleted successfully'))
+              .catchError((error) => print('Failed to delete child: $error'));
         }
-      });
+      }
+    });
   }
 
   Future<void> _dialogBuilder(BuildContext context, dynamic child) {
@@ -187,9 +269,8 @@ class ChildObjectList extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Remove child?'),
-          content: const Text(
-            'Do you wish to remove this child from our database?'
-          ),
+          content:
+              const Text('Do you wish to remove this child from our database?'),
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
@@ -206,9 +287,10 @@ class ChildObjectList extends StatelessWidget {
               ),
               child: const Text('Yes'),
               onPressed: () {
-                  deleteChildFromChildTable(child['name'], child['surname']);
-                  deleteChildByNameAndSurname(userId, child['name'], child['surname']);
-                  Navigator.of(context).pop();
+                deleteChildFromChildTable(child['name'], child['surname']);
+                deleteChildByNameAndSurname(
+                    userId, child['name'], child['surname']);
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -216,13 +298,13 @@ class ChildObjectList extends StatelessWidget {
       },
     );
   }
-  
-  Text checkChildSex(String sex) {
-    if(sex == "0"){
-      return const Text("Male");
-    }else{
-      return const Text("Female");
-    }
+}
+
+Text checkChildSex(String sex) {
+  if (sex == "0") {
+    return const Text("Male");
+  } else {
+    return const Text("Female");
   }
 }
 
