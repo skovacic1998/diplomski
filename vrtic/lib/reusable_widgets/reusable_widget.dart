@@ -87,6 +87,7 @@ class ChildObjectListMultiSelect extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedItems = ref.watch(selectedChildrenProvider);
+    final selectedChildren = ref.watch(selectedChildrenObjectsProvider);
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('child').snapshots(),
@@ -102,20 +103,20 @@ class ChildObjectListMultiSelect extends ConsumerWidget {
         }
 
         final children = snapshot.data?.docs;
-
         if (children == null || children.isEmpty) {
           return const Text('No children found.');
         }
-
         return SizedBox(
             height: MediaQuery.of(context).size.height * 0.6,
             child: ListView.builder(
               shrinkWrap: true,
               itemCount: children.length,
               itemBuilder: (context, index) {
+                final childId = children[index].id;
                 final child = children[index].data() as Map<String, dynamic>;
                 final childName = child['name'];
                 final childSurname = child['surname'];
+                final actualChild = {'name': childName, 'sex': child['sex'], 'surname': childSurname, 'id': childId};
                 return ListTile(
                   tileColor: selectedItems.contains(index)
                       ? Colors.blue.withOpacity(0.5)
@@ -124,10 +125,18 @@ class ChildObjectListMultiSelect extends ConsumerWidget {
                     if (!selectedItems.contains(index)) {
                       ref.read(selectedChildrenProvider.notifier).state = [...selectedItems, index];
                     }
+                    final isValueUnique = selectedChildren.every((item) => item['id'] != actualChild['id']);
+                    if(isValueUnique){
+                      ref.read(selectedChildrenObjectsProvider.notifier).state = [...selectedChildren, actualChild];
+                    }
                   },
                   onLongPress: () {
                     ref.read(selectedChildrenProvider.notifier).state = [
                       ...selectedItems.where((item) => item != index),
+                    ];
+
+                    ref.read(selectedChildrenObjectsProvider.notifier).state = [
+                      ...selectedChildren.where((item) => item['id'] != actualChild['id']),
                     ];
                   },
                   leading: const Icon(

@@ -130,10 +130,8 @@ class AddChildren extends StatelessWidget {
                   surname: surnameController.text,
                   sex: childTypeForSend,
                 );
-                String jsonUser = jsonEncode(newChild);
                 await FirebaseFirestore.instance.collection('child').doc().set(newChild.getMap());
                 await FirebaseFirestore.instance.collection('users').doc(currentUser.uid.toString()).update({"children":FieldValue.arrayUnion([newChild.getMap()])});
-                print(jsonUser);
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.resolveWith((states) {
