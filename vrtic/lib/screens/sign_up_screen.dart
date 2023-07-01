@@ -75,18 +75,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 20, MediaQuery.of(context).size.height * 0.2, 20, 0),
             child: Column(
               children: <Widget>[
-                reusableTextField("Enter username", Icons.person_outline, false,
-                    _userNameTextEditingController),
+                reusableTextFieldLoginAndSignup("Enter username", Icons.person_outline, false,
+                    _userNameTextEditingController, null, null),
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Enter email", Icons.email_outlined, false,
-                    _emailTextEditingController),
+                reusableTextFieldLoginAndSignup("Enter email", Icons.email_outlined, false,
+                    _emailTextEditingController, null, null),
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Enter password", Icons.lock_outline, true,
-                    _passwordTextEditingController),
+                reusableTextFieldLoginAndSignup("Enter password", Icons.lock_outline, true,
+                    _passwordTextEditingController, null, null),
                 signInSignUpButton(
                   context,
                   false,

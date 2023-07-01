@@ -21,7 +21,7 @@ class _CustomDateTimePickerState extends ConsumerState<CustomDateTimePicker> {
         //   padding: const EdgeInsets.all(8),
         //   child: Center(
         //     child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const Text('Choose date and time of evidention',
               style: TextStyle(fontSize: 18)),

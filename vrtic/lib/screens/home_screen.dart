@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vrtic/providers/user_provider.dart';
 import 'package:vrtic/models/user.dart' as user_model;
+import 'package:vrtic/screens/add_child_note_screen.dart';
 import 'package:vrtic/screens/evidention_screen.dart';
 import 'package:vrtic/screens/sign_in_screen.dart';
 
@@ -73,9 +74,15 @@ class HomeScreen extends ConsumerWidget {
               },
             ),
             ListTile(
-              title: const Text('Drugi page'),
+              title: const Text('Add evidention'),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context)=> const EvidentionScreen()));
+              },
+            ),
+            ListTile(
+              title: const Text('Add note screen'),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> const AddNoteForChild()));
               },
             ),
             ListTile(

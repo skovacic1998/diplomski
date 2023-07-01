@@ -15,15 +15,22 @@ Image logoWidget(String imageString) {
   );
 }
 
-TextField reusableTextField(String text, IconData iconData, bool isPasswordType,
-    TextEditingController controller) {
+TextField reusableTextField(
+    String text,
+    IconData iconData,
+    bool isPasswordType,
+    TextEditingController controller,
+    Color? textColor,
+    OutlineInputBorder? outlineBorder) {
   return TextField(
     controller: controller,
     obscureText: isPasswordType,
     enableSuggestions: !isPasswordType,
     autocorrect: !isPasswordType,
-    cursorColor: Colors.white,
-    style: TextStyle(color: Colors.white.withOpacity(0.9)),
+    cursorColor: textColor ?? Colors.white.withOpacity(0.9),
+    style: TextStyle(
+      color: textColor ?? Colors.white.withOpacity(0.9),
+    ),
     decoration: InputDecoration(
       prefixIcon: Icon(
         iconData,
@@ -36,14 +43,56 @@ TextField reusableTextField(String text, IconData iconData, bool isPasswordType,
       filled: true,
       floatingLabelBehavior: FloatingLabelBehavior.never,
       fillColor: Colors.white.withOpacity(0.3),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30.0),
-        borderSide: const BorderSide(width: 0, style: BorderStyle.none),
-      ),
+      border: outlineBorder ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30.0),
+            borderSide: const BorderSide(width: 0, style: BorderStyle.none),
+          ),
     ),
     keyboardType: isPasswordType
         ? TextInputType.visiblePassword
         : TextInputType.emailAddress,
+    maxLines: isPasswordType ? 1 : 5,
+  );
+}
+TextField reusableTextFieldLoginAndSignup(
+    String text,
+    IconData iconData,
+    bool isPasswordType,
+    TextEditingController controller,
+    Color? textColor,
+    OutlineInputBorder? outlineBorder) {
+  return TextField(
+    controller: controller,
+    obscureText: isPasswordType,
+    enableSuggestions: !isPasswordType,
+    autocorrect: !isPasswordType,
+    cursorColor: textColor ?? Colors.white.withOpacity(0.9),
+    style: TextStyle(
+      color: textColor ?? Colors.white.withOpacity(0.9),
+    ),
+    decoration: InputDecoration(
+      prefixIcon: Icon(
+        iconData,
+        color: Colors.white70,
+      ),
+      labelText: text,
+      labelStyle: TextStyle(
+        color: Colors.white.withOpacity(0.9),
+      ),
+      filled: true,
+      floatingLabelBehavior: FloatingLabelBehavior.never,
+      fillColor: Colors.white.withOpacity(0.3),
+      border: outlineBorder ??
+          OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30.0),
+            borderSide: const BorderSide(width: 0, style: BorderStyle.none),
+          ),
+    ),
+    keyboardType: isPasswordType
+        ? TextInputType.visiblePassword
+        : TextInputType.emailAddress,
+    maxLines: 1,
   );
 }
 
@@ -107,58 +156,71 @@ class ChildObjectListMultiSelect extends ConsumerWidget {
           return const Text('No children found.');
         }
         return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.6,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: children.length,
-              itemBuilder: (context, index) {
-                final childId = children[index].id;
-                final child = children[index].data() as Map<String, dynamic>;
-                final childName = child['name'];
-                final childSurname = child['surname'];
-                final actualChild = {'name': childName, 'sex': child['sex'], 'surname': childSurname, 'id': childId};
-                return ListTile(
-                  tileColor: selectedItems.contains(index)
-                      ? Colors.blue.withOpacity(0.5)
-                      : Colors.transparent,
-                  onTap: () {
-                    if (!selectedItems.contains(index)) {
-                      ref.read(selectedChildrenProvider.notifier).state = [...selectedItems, index];
-                    }
-                    final isValueUnique = selectedChildren.every((item) => item['id'] != actualChild['id']);
-                    if(isValueUnique){
-                      ref.read(selectedChildrenObjectsProvider.notifier).state = [...selectedChildren, actualChild];
-                    }
-                  },
-                  onLongPress: () {
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: children.length,
+            itemBuilder: (context, index) {
+              final childId = children[index].id;
+              final child = children[index].data() as Map<String, dynamic>;
+              final childName = child['name'];
+              final childSurname = child['surname'];
+              final actualChild = {
+                'name': childName,
+                'sex': child['sex'],
+                'surname': childSurname,
+                'id': childId
+              };
+              return ListTile(
+                tileColor: selectedItems.contains(index)
+                    ? Colors.blue.withOpacity(0.5)
+                    : Colors.transparent,
+                onTap: () {
+                  if (!selectedItems.contains(index)) {
                     ref.read(selectedChildrenProvider.notifier).state = [
-                      ...selectedItems.where((item) => item != index),
+                      ...selectedItems,
+                      index
                     ];
-
+                  }
+                  final isValueUnique = selectedChildren
+                      .every((item) => item['id'] != actualChild['id']);
+                  if (isValueUnique) {
                     ref.read(selectedChildrenObjectsProvider.notifier).state = [
-                      ...selectedChildren.where((item) => item['id'] != actualChild['id']),
+                      ...selectedChildren,
+                      actualChild
                     ];
-                  },
-                  leading: const Icon(
-                    Icons.child_care,
-                    size: 40,
-                  ),
-                  title: Text('$childName'),
-                  subtitle: Row(
-                    children: [
-                      Text(childSurname),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      checkChildSex(
-                        child['sex'].toString(),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          );
+                  }
+                },
+                onLongPress: () {
+                  ref.read(selectedChildrenProvider.notifier).state = [
+                    ...selectedItems.where((item) => item != index),
+                  ];
+
+                  ref.read(selectedChildrenObjectsProvider.notifier).state = [
+                    ...selectedChildren
+                        .where((item) => item['id'] != actualChild['id']),
+                  ];
+                },
+                leading: const Icon(
+                  Icons.child_care,
+                  size: 40,
+                ),
+                title: Text('$childName'),
+                subtitle: Row(
+                  children: [
+                    Text(childSurname),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    checkChildSex(
+                      child['sex'].toString(),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
       },
     );
   }
@@ -168,6 +230,91 @@ class ChildObjectListMultiSelect extends ConsumerWidget {
     final totalHeight = listTileHeight * itemCount;
     final maxHeight = MediaQuery.of(context).size.height * 0.6;
     return totalHeight > maxHeight ? maxHeight : totalHeight;
+  }
+}
+
+class ChildObjectListSingleSelect extends ConsumerWidget {
+  const ChildObjectListSingleSelect({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('child').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        final children = snapshot.data?.docs;
+        if (children == null || children.isEmpty) {
+          return const Text('No children found.');
+        }
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: children.length,
+            itemBuilder: (context, index) {
+              final childId = children[index].id;
+              final child = children[index].data() as Map<String, dynamic>;
+              final childName = child['name'];
+              final childSurname = child['surname'];
+              final actualChild = {
+                'name': childName,
+                'sex': child['sex'],
+                'surname': childSurname,
+                'id': childId
+              };
+              return _CustomListTile(index, actualChild);
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _CustomListTile extends ConsumerWidget {
+  const _CustomListTile(this.index, this.child);
+  final int index;
+  final Map<String, dynamic> child;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedItem = ref.watch(selectedChildIndexProvider);
+    return ListTile(
+      tileColor: selectedItem == index
+          ? Colors.blue.withOpacity(0.5)
+          : Colors.transparent,
+      onTap: () {
+        if (selectedItem != index) {
+          ref.read(selectedChildObjectProvider.notifier).state = child;
+          ref.read(selectedChildIndexProvider.notifier).state = index;
+        }
+      },
+      leading: const Icon(
+        Icons.child_care,
+        size: 40,
+      ),
+      title: Text(child['name']),
+      subtitle: Row(
+        children: [
+          Text(child['surname']),
+          const SizedBox(
+            width: 20,
+          ),
+          checkChildSex(
+            child['sex'].toString(),
+          ),
+        ],
+      ),
+    );
   }
 }
 

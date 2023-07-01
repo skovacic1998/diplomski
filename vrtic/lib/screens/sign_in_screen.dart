@@ -51,13 +51,13 @@ class SignInScreen extends ConsumerWidget {
                 const SizedBox(
                   height: 30,
                 ),
-                reusableTextField("Enter email", Icons.person_outline, false,
-                    emailTextController),
+                reusableTextFieldLoginAndSignup("Enter email", Icons.person_outline, false,
+                    emailTextController, null, null),
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Enter password", Icons.lock_outline, true,
-                    passwordTextController),
+                reusableTextFieldLoginAndSignup("Enter password", Icons.lock_outline, true,
+                    passwordTextController, null, null),
                 const SizedBox(
                   height: 20,
                 ),
