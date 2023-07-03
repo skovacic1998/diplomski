@@ -8,6 +8,7 @@ import 'package:vrtic/screens/evidention_screen.dart';
 import 'package:vrtic/screens/sign_in_screen.dart';
 
 import '../utils/color_utils.dart';
+import 'add_activity_screen.dart';
 import 'adding_children_screen.dart';
 /*
 final userProviderFromSignIn = StateProvider((ref) {
@@ -80,9 +81,15 @@ class HomeScreen extends ConsumerWidget {
               },
             ),
             ListTile(
-              title: const Text('Add note screen'),
+              title: const Text('Add note'),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context)=> const AddNoteForChild()));
+              },
+            ),
+            ListTile(
+              title: const Text('Add activity'),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> const AddActivity()));
               },
             ),
             ListTile(

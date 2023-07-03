@@ -15,21 +15,23 @@ class EvidentionScreen extends ConsumerWidget {
       appBar: customAppBar('Evidention'),
       body: Padding(
         padding: const EdgeInsets.all(8),
-        child: Column(children: [
-          const CustomDateTimePicker(),
-          const Align(
-              alignment: Alignment.topCenter,
-              child: ChildObjectListMultiSelect()),
-          ElevatedButton(
-            onPressed: () async {
-              Evidention evidention = Evidention(timestamp: ref.read(dateTimeProvider).millisecondsSinceEpoch, children: ref.read(selectedChildrenObjectsProvider));
-              print(evidention.timestamp);
-              print(evidention.children);
-              await FirebaseFirestore.instance.collection('evidentions').doc().set(evidention.toMap());
-            },
-            child: const Text('Save evidention to database'),
-          ),
-        ]),
+        child: SingleChildScrollView(
+          child: Column(children: [
+            const CustomDateTimePicker(),
+            const Align(
+                alignment: Alignment.topCenter,
+                child: ChildObjectListMultiSelect()),
+            ElevatedButton(
+              onPressed: () async {
+                Evidention evidention = Evidention(timestamp: ref.read(dateTimeProvider).millisecondsSinceEpoch, children: ref.read(selectedChildrenObjectsProvider));
+                print(evidention.timestamp);
+                print(evidention.children);
+                await FirebaseFirestore.instance.collection('evidentions').doc().set(evidention.toMap());
+              },
+              child: const Text('Save evidention to database'),
+            ),
+          ]),
+        ),
       ),
     );
   }

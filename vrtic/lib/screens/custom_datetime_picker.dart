@@ -33,10 +33,8 @@ class _CustomDateTimePickerState extends ConsumerState<CustomDateTimePicker> {
               if (time == null) return;
               final newDateTime = DateTime(
                   date.year, date.month, date.day, time.hour, time.minute);
-              setState(() {
                 dateTime = newDateTime;
-                ref.read(dateTimeProvider.notifier).state = newDateTime;
-              });
+                ref.read(dateTimeProvider.notifier).state = dateTime;
             },
             child: Text(
                 '${dateTime.year}/${dateTime.month}/${dateTime.day} ${dateTime.hour}:${dateTime.minute}'),

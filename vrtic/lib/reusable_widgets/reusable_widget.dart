@@ -34,11 +34,11 @@ TextField reusableTextField(
     decoration: InputDecoration(
       prefixIcon: Icon(
         iconData,
-        color: Colors.white70,
+        color: Colors.black,
       ),
       labelText: text,
       labelStyle: TextStyle(
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.black.withOpacity(0.9),
       ),
       filled: true,
       floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -257,7 +257,7 @@ class ChildObjectListSingleSelect extends ConsumerWidget {
           return const Text('No children found.');
         }
         return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.6,
+          height: MediaQuery.of(context).size.height * 0.3,
           child: ListView.builder(
             shrinkWrap: true,
             itemCount: children.length,
