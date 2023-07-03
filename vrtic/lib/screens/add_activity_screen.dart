@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vrtic/models/activity.dart';
@@ -50,19 +51,17 @@ class AddActivity extends StatelessWidget {
               const CustomDateTimePicker(),
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final timestamp =
-                      ref.read(dateTimeProvider).millisecondsSinceEpoch;
                   return ElevatedButton(
                     onPressed: () async {
                       Activity activity = Activity(
                         title: titleController.text,
                         description: descriptionController.text,
-                        timestamp: timestamp,
+                        timestamp: ref.read(dateTimeProvider).millisecondsSinceEpoch
                       );
                       print(activity.title);
                       print(activity.description);
                       print(activity.timestamp);
-                      //await FirebaseFirestore.instance.collection('activities').doc().set(activity.toMap());
+                      await FirebaseFirestore.instance.collection('activities').doc().set(activity.toMap());
                     },
                     child: const Text('Save activity to database'),
                   );

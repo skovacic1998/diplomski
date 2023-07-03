@@ -39,7 +39,7 @@ class AddNoteForChild extends StatelessWidget {
                     builder: (BuildContext context, WidgetRef ref, Widget? child) {
                       final child = ref.watch(selectedChildObjectProvider);
                       final timestamp =
-                          ref.read(dateTimeProvider).millisecondsSinceEpoch;
+                          ref.watch(dateTimeProvider).millisecondsSinceEpoch;
                       return ElevatedButton(
                         onPressed: () async {
                           Note note = Note(

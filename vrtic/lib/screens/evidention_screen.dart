@@ -6,11 +6,11 @@ import 'package:vrtic/providers/evidention_provider.dart';
 import 'package:vrtic/reusable_widgets/reusable_widget.dart';
 import 'package:vrtic/screens/custom_datetime_picker.dart';
 
-class EvidentionScreen extends ConsumerWidget {
+class EvidentionScreen extends StatelessWidget {
   const EvidentionScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar('Evidention'),
       body: Padding(
@@ -21,14 +21,18 @@ class EvidentionScreen extends ConsumerWidget {
             const Align(
                 alignment: Alignment.topCenter,
                 child: ChildObjectListMultiSelect()),
-            ElevatedButton(
-              onPressed: () async {
-                Evidention evidention = Evidention(timestamp: ref.read(dateTimeProvider).millisecondsSinceEpoch, children: ref.read(selectedChildrenObjectsProvider));
-                print(evidention.timestamp);
-                print(evidention.children);
-                await FirebaseFirestore.instance.collection('evidentions').doc().set(evidention.toMap());
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) { 
+                return ElevatedButton(
+                onPressed: () async {
+                  Evidention evidention = Evidention(timestamp: ref.read(dateTimeProvider).millisecondsSinceEpoch, children: ref.read(selectedChildrenObjectsProvider));
+                  print(evidention.timestamp);
+                  print(evidention.children);
+                 await FirebaseFirestore.instance.collection('evidentions').doc().set(evidention.toMap());
+                },
+                child: const Text('Save evidention to database'),
+                );
               },
-              child: const Text('Save evidention to database'),
             ),
           ]),
         ),
