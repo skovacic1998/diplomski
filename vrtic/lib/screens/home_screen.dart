@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vrtic/providers/user_provider.dart';
 import 'package:vrtic/models/user.dart' as user_model;
+import 'package:vrtic/reusable_widgets/reusable_widget.dart';
+import 'package:vrtic/screens/activity_screen_for_parent.dart';
 import 'package:vrtic/screens/add_child_note_screen.dart';
 import 'package:vrtic/screens/evidention_screen.dart';
 import 'package:vrtic/screens/sign_in_screen.dart';
@@ -89,7 +91,9 @@ class HomeScreen extends ConsumerWidget {
             ListTile(
               title: const Text('Add activity'),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> const AddActivity()));
+                if(user != null){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=> user.isParent == 0 ? const AddActivity() : const AllActivities()));
+                }
               },
             ),
             ListTile(
@@ -99,6 +103,7 @@ class HomeScreen extends ConsumerWidget {
               minLeadingWidth: 3,
               onTap: () {
                 FirebaseAuth.instance.signOut().then((value) {
+                  ref.refresh(userProvider);
                   SnackBar snackBar = SnackBar(
                     backgroundColor: hexStringToColor("D37E1A"),
                     duration: const Duration(seconds: 1),

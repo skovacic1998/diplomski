@@ -55,6 +55,7 @@ TextField reusableTextField(
     maxLines: isPasswordType ? 1 : 5,
   );
 }
+
 TextField reusableTextFieldLoginAndSignup(
     String text,
     IconData iconData,
@@ -131,7 +132,7 @@ Container signInSignUpButton(
 }
 
 class ChildObjectListMultiSelect extends ConsumerWidget {
-  const ChildObjectListMultiSelect({Key? key}) : super(key: key);
+  const ChildObjectListMultiSelect({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -234,11 +235,10 @@ class ChildObjectListMultiSelect extends ConsumerWidget {
 }
 
 class ChildObjectListSingleSelect extends ConsumerWidget {
-  const ChildObjectListSingleSelect({Key? key}) : super(key: key);
+  const ChildObjectListSingleSelect({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('child').snapshots(),
       builder: (context, snapshot) {
@@ -281,6 +281,48 @@ class ChildObjectListSingleSelect extends ConsumerWidget {
   }
 }
 
+class ActivitiesList extends ConsumerWidget {
+  const ActivitiesList({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('activities').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        final activities = snapshot.data?.docs;
+        if (activities == null || activities.isEmpty) {
+          return const Text('No sctivites found.');
+        }
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.3,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: activities.length,
+            itemBuilder: (context, index) {
+              final activity = activities[index].data() as Map<String, dynamic>;
+              final activityTitle = activity['title'];
+              final activityDescription = activity['description'];
+              final timestamp = activity['timestamp'];
+              final DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+              return _CustomCardForActivity(index, activityTitle, activityDescription, dateTime);
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
 class _CustomListTile extends ConsumerWidget {
   const _CustomListTile(this.index, this.child);
   final int index;
@@ -314,6 +356,25 @@ class _CustomListTile extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _CustomCardForActivity extends ConsumerWidget {
+  const _CustomCardForActivity(this.index, this.title, this.description, this.dateTime);
+  final int index;
+  final String title;
+  final String description;
+  final DateTime dateTime;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Card(
+      child: Column(children: [
+        Row(
+          children: [Text(title), Text(description)],
+        ),
+        Text('${dateTime.year}/${dateTime.month}/${dateTime.day} ${dateTime.hour}:${dateTime.minute}'),
+      ]),
     );
   }
 }
