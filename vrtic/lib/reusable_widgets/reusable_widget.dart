@@ -371,8 +371,15 @@ class _CustomCardForActivity extends ConsumerWidget {
     return Card(
       child: Column(children: [
         Row(
-          children: [Text(title), Text(description)],
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [ 
+          const Text('Title: ', style: TextStyle(fontWeight: FontWeight.bold),), Text(title),
+        ],),
+        const SizedBox(height: 5,), 
+        Row(
+          children: [const Text('Description: ', style: TextStyle(fontWeight: FontWeight.bold),),Text(description)],
         ),
+        const SizedBox(height: 5,), 
         Text('${dateTime.year}/${dateTime.month}/${dateTime.day} ${dateTime.hour}:${dateTime.minute}'),
       ]),
     );

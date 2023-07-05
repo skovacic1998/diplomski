@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vrtic/providers/user_provider.dart';
 import 'package:vrtic/models/user.dart' as user_model;
-import 'package:vrtic/reusable_widgets/reusable_widget.dart';
 import 'package:vrtic/screens/activity_screen_for_parent.dart';
 import 'package:vrtic/screens/add_child_note_screen.dart';
 import 'package:vrtic/screens/evidention_screen.dart';
@@ -12,11 +11,7 @@ import 'package:vrtic/screens/sign_in_screen.dart';
 import '../utils/color_utils.dart';
 import 'add_activity_screen.dart';
 import 'adding_children_screen.dart';
-/*
-final userProviderFromSignIn = StateProvider((ref) {
-  return ref.watch(userProvider);
-});
-*/
+
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -61,39 +56,51 @@ class HomeScreen extends ConsumerWidget {
                     Row(
                       children: [
                         const Icon(Icons.person_outlined),
-                          if(user == null)
-                            const Text(''),
-                          if(user != null)
-                            Text(user.username.toString()),
+                        if (user == null) const Text(''),
+                        if (user != null) Text(user.username.toString()),
                       ],
                     ),
                     userType(user),
                   ],
                 )),
             ListTile(
+              enabled: user!.isParent == 1 ? true : false,
               title: const Text('Add children'),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildren(currentUser: firebaseUser!)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            AddChildren(currentUser: firebaseUser!)));
               },
             ),
             ListTile(
               title: const Text('Add evidention'),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> const EvidentionScreen()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const EvidentionScreen()));
               },
             ),
             ListTile(
               title: const Text('Add note'),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> const AddNoteForChild()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AddNoteForChild()));
               },
             ),
             ListTile(
               title: const Text('Add activity'),
               onTap: () {
-                if(user != null){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> user.isParent == 0 ? const AddActivity() : const AllActivities()));
-                }
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => user.isParent == 0
+                            ? const AddActivity()
+                            : const AllActivities()));
               },
             ),
             ListTile(
@@ -103,7 +110,6 @@ class HomeScreen extends ConsumerWidget {
               minLeadingWidth: 3,
               onTap: () {
                 FirebaseAuth.instance.signOut().then((value) {
-                  ref.refresh(userProvider);
                   SnackBar snackBar = SnackBar(
                     backgroundColor: hexStringToColor("D37E1A"),
                     duration: const Duration(seconds: 1),
@@ -124,18 +130,26 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+            child: Text('Welcome ${user.username}!'),
+          ),
+        ],
+      ),
     );
   }
 
-  Text userType(user_model.User? user){
-    if(user != null){
-      if(user.isParent == 0){
+  Text userType(user_model.User? user) {
+    if (user != null) {
+      if (user.isParent == 0) {
         return const Text('Keeper');
       } else {
         return const Text('Parent');
       }
-    }else{
+    } else {
       return const Text("");
     }
-  } 
+  }
 }
