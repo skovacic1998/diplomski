@@ -11,6 +11,7 @@ import 'package:vrtic/screens/sign_in_screen.dart';
 import '../utils/color_utils.dart';
 import 'add_activity_screen.dart';
 import 'adding_children_screen.dart';
+import 'note_screen_for_parent.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -64,7 +65,7 @@ class HomeScreen extends ConsumerWidget {
                   ],
                 )),
             ListTile(
-              enabled: user!.isParent == 1 ? true : false,
+              enabled: user?.isParent == 1 ? true : false,
               title: const Text('Add children'),
               onTap: () {
                 Navigator.push(
@@ -75,6 +76,7 @@ class HomeScreen extends ConsumerWidget {
               },
             ),
             ListTile(
+              enabled: user?.isParent == 0 ? true : false,
               title: const Text('Add evidention'),
               onTap: () {
                 Navigator.push(
@@ -84,21 +86,21 @@ class HomeScreen extends ConsumerWidget {
               },
             ),
             ListTile(
-              title: const Text('Add note'),
+              title: user?.isParent == 0 ? const Text('Add note') : const Text('Child notes'),
               onTap: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const AddNoteForChild()));
+                        builder: (context) => user?.isParent == 0 ? const AddNoteForChild() : const NoteScreen()));
               },
             ),
             ListTile(
-              title: const Text('Add activity'),
+              title:  user?.isParent == 0 ? const Text('Add activity') : const Text('Activities'),
               onTap: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => user.isParent == 0
+                        builder: (context) => user?.isParent == 0
                             ? const AddActivity()
                             : const AllActivities()));
               },
@@ -134,7 +136,7 @@ class HomeScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
-            child: Text('Welcome ${user.username}!'),
+            child: Text('Welcome ${user?.username}!'),
           ),
         ],
       ),

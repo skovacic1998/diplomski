@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vrtic/models/child.dart';
+import 'package:vrtic/models/child_for_user.dart';
 import 'package:vrtic/providers/add_children_provider.dart';
 import 'package:vrtic/reusable_widgets/reusable_widget.dart';
 
@@ -128,8 +129,23 @@ class AddChildren extends StatelessWidget {
                   surname: surnameController.text,
                   sex: childTypeForSend,
                 );
-                await FirebaseFirestore.instance.collection('child').doc().set(newChild.getMap());
-                await FirebaseFirestore.instance.collection('users').doc(currentUser.uid.toString()).update({"children":FieldValue.arrayUnion([newChild.getMap()])});
+                CollectionReference childCollectionRef =
+                    FirebaseFirestore.instance.collection('child');
+                DocumentReference childDocRef = childCollectionRef
+                    .doc(); // Create a document reference with an auto-generated ID
+                String childUid = childDocRef.id;
+                await childDocRef.set(newChild.getMap());
+                UserChild userChild = UserChild(
+                    uid: childUid,
+                    name: newChild.name,
+                    surname: newChild.surname,
+                    sex: newChild.sex);
+                await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(currentUser.uid.toString())
+                    .update({
+                  "children": FieldValue.arrayUnion([userChild.getMap()])
+                });
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.resolveWith((states) {

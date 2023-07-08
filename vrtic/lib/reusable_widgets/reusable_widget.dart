@@ -225,13 +225,6 @@ class ChildObjectListMultiSelect extends ConsumerWidget {
       },
     );
   }
-
-  double calculateListViewHeight(int itemCount, BuildContext context) {
-    const listTileHeight = 56.0;
-    final totalHeight = listTileHeight * itemCount;
-    final maxHeight = MediaQuery.of(context).size.height * 0.6;
-    return totalHeight > maxHeight ? maxHeight : totalHeight;
-  }
 }
 
 class ChildObjectListSingleSelect extends ConsumerWidget {
