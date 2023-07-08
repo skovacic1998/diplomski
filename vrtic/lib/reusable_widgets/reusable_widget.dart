@@ -136,8 +136,6 @@ class ChildObjectListMultiSelect extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedItems = ref.watch(selectedChildrenProvider);
-    final selectedChildren = ref.watch(selectedChildrenObjectsProvider);
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('child').snapshots(),
@@ -172,53 +170,7 @@ class ChildObjectListMultiSelect extends ConsumerWidget {
                 'surname': childSurname,
                 'id': childId
               };
-              return ListTile(
-                tileColor: selectedItems.contains(index)
-                    ? Colors.blue.withOpacity(0.5)
-                    : Colors.transparent,
-                onTap: () {
-                  if (!selectedItems.contains(index)) {
-                    ref.read(selectedChildrenProvider.notifier).state = [
-                      ...selectedItems,
-                      index
-                    ];
-                  }
-                  final isValueUnique = selectedChildren
-                      .every((item) => item['id'] != actualChild['id']);
-                  if (isValueUnique) {
-                    ref.read(selectedChildrenObjectsProvider.notifier).state = [
-                      ...selectedChildren,
-                      actualChild
-                    ];
-                  }
-                },
-                onLongPress: () {
-                  ref.read(selectedChildrenProvider.notifier).state = [
-                    ...selectedItems.where((item) => item != index),
-                  ];
-
-                  ref.read(selectedChildrenObjectsProvider.notifier).state = [
-                    ...selectedChildren
-                        .where((item) => item['id'] != actualChild['id']),
-                  ];
-                },
-                leading: const Icon(
-                  Icons.child_care,
-                  size: 40,
-                ),
-                title: Text('$childName'),
-                subtitle: Row(
-                  children: [
-                    Text(childSurname),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    checkChildSex(
-                      child['sex'].toString(),
-                    ),
-                  ],
-                ),
-              );
+              return _CustomListTileForEvidention(index, actualChild);
             },
           ),
         );
@@ -227,11 +179,11 @@ class ChildObjectListMultiSelect extends ConsumerWidget {
   }
 }
 
-class ChildObjectListSingleSelect extends ConsumerWidget {
+class ChildObjectListSingleSelect extends StatelessWidget {
   const ChildObjectListSingleSelect({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('child').snapshots(),
       builder: (context, snapshot) {
@@ -306,12 +258,75 @@ class ActivitiesList extends ConsumerWidget {
               final activityTitle = activity['title'];
               final activityDescription = activity['description'];
               final timestamp = activity['timestamp'];
-              final DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
-              return _CustomCardForActivity(index, activityTitle, activityDescription, dateTime);
+              final DateTime dateTime =
+                  DateTime.fromMillisecondsSinceEpoch(timestamp);
+              return _CustomCardForActivity(
+                  index, activityTitle, activityDescription, dateTime);
             },
           ),
         );
       },
+    );
+  }
+}
+
+class _CustomListTileForEvidention extends ConsumerWidget {
+  const _CustomListTileForEvidention(this.index, this.child);
+  final int index;
+  final Map<String, dynamic> child;
+  
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final childName = child['name'];
+    final childSurname = child['surname'];
+    final selectedItems = ref.watch(selectedChildrenProvider);
+    final selectedChildren = ref.watch(selectedChildrenObjectsProvider);
+    final selectedItem = ref.watch(selectedChildIndexProvider);
+    return ListTile(
+      tileColor: selectedItems.contains(index)
+          ? Colors.blue.withOpacity(0.5)
+          : Colors.transparent,
+      onTap: () {
+        if (!selectedItems.contains(index)) {
+          ref.read(selectedChildrenProvider.notifier).state = [
+            ...selectedItems,
+            index
+          ];
+        }
+        final isValueUnique =
+            selectedChildren.every((item) => item['id'] != child['id']);
+        if (isValueUnique) {
+          ref.read(selectedChildrenObjectsProvider.notifier).state = [
+            ...selectedChildren,
+            child
+          ];
+        }
+      },
+      onLongPress: () {
+        ref.read(selectedChildrenProvider.notifier).state = [
+          ...selectedItems.where((item) => item != index),
+        ];
+
+        ref.read(selectedChildrenObjectsProvider.notifier).state = [
+          ...selectedChildren.where((item) => item['id'] != child['id']),
+        ];
+      },
+      leading: const Icon(
+        Icons.child_care,
+        size: 40,
+      ),
+      title: Text('$childName'),
+      subtitle: Row(
+        children: [
+          Text(childSurname),
+          const SizedBox(
+            width: 20,
+          ),
+          checkChildSex(
+            child['sex'].toString(),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -354,7 +369,8 @@ class _CustomListTile extends ConsumerWidget {
 }
 
 class _CustomCardForActivity extends ConsumerWidget {
-  const _CustomCardForActivity(this.index, this.title, this.description, this.dateTime);
+  const _CustomCardForActivity(
+      this.index, this.title, this.description, this.dateTime);
   final int index;
   final String title;
   final String description;
@@ -365,15 +381,31 @@ class _CustomCardForActivity extends ConsumerWidget {
       child: Column(children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [ 
-          const Text('Title: ', style: TextStyle(fontWeight: FontWeight.bold),), Text(title),
-        ],),
-        const SizedBox(height: 5,), 
-        Row(
-          children: [const Text('Description: ', style: TextStyle(fontWeight: FontWeight.bold),),Text(description)],
+          children: [
+            const Text(
+              'Title: ',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text(title),
+          ],
         ),
-        const SizedBox(height: 5,), 
-        Text('${dateTime.year}/${dateTime.month}/${dateTime.day} ${dateTime.hour}:${dateTime.minute}'),
+        const SizedBox(
+          height: 5,
+        ),
+        Row(
+          children: [
+            const Text(
+              'Description: ',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text(description)
+          ],
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Text(
+            '${dateTime.year}/${dateTime.month}/${dateTime.day} ${dateTime.hour}:${dateTime.minute}'),
       ]),
     );
   }

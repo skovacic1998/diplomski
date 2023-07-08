@@ -14,50 +14,59 @@ class AddNoteForChild extends StatelessWidget {
   Widget build(BuildContext context) {
     TextEditingController noteEditingController = TextEditingController();
     return Scaffold(
-      appBar: customAppBar('Add child note'),
-      body: Container(
+      appBar: customAppBar('Notes'),
+      body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(8),
             child: Column(
-                children: [
-                  const SizedBox(height: 10,),
-                    reusableTextField(
-                      'Note',
-                      Icons.note_alt_outlined,
-                      false,
-                      noteEditingController,
-                      Colors.black,
-                      OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                          borderSide:
-                              const BorderSide(width: 2, style: BorderStyle.solid)),
-                    ),
-                  const CustomDateTimePicker(),
-                  const ChildObjectListSingleSelect(),
-                  Consumer(
-                    builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                      final child = ref.watch(selectedChildObjectProvider);
-                      final timestamp =
-                          ref.watch(dateTimeProvider).millisecondsSinceEpoch;
-                      return ElevatedButton(
-                        onPressed: () async {
-                          Note note = Note(
-                              noteText: noteEditingController.text,
-                              timestamp: timestamp,
-                              child: child);
-                          print(note.noteText);
-                          print(note.timestamp);
-                          print(note.child);
-                          await FirebaseFirestore.instance.collection('notes').doc().set(note.toMap());
-                        },
-                        child: const Text('Save note to database'),
-                      );
-                    },
-                  )
-                ],
-              ),
-      ),
+              children: [
+                const SizedBox(
+                  height: 10,
+                ),
+                reusableTextField(
+                  'Note',
+                  Icons.note_alt_outlined,
+                  false,
+                  noteEditingController,
+                  Colors.black,
+                  OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide:
+                          const BorderSide(width: 2, style: BorderStyle.solid)),
+                ),
+                const CustomDateTimePicker(),
+                const ChildObjectListSingleSelect(),
+                Consumer(
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
+                    final child = ref.watch(selectedChildObjectProvider);
+                    final timestamp =
+                        ref.watch(dateTimeProvider).millisecondsSinceEpoch;
+                    return ElevatedButton(
+                      onPressed: () async {
+                        Note note = Note(
+                            noteText: noteEditingController.text,
+                            timestamp: timestamp,
+                            child: child);
+                        print(note.noteText);
+                        print(note.timestamp);
+                        print(note.child);
+                        await FirebaseFirestore.instance
+                            .collection('notes')
+                            .doc()
+                            .set(note.toMap());
+                      },
+                      child: const Text('Save note to database'),
+                    );
+                  },
+                )
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
