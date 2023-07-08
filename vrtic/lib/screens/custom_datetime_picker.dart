@@ -23,7 +23,7 @@ class _CustomDateTimePickerState extends ConsumerState<CustomDateTimePicker> {
         //     child: Column(
         // mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Text('Choose date and time of evidention',
+          const Text('Choose date and time',
               style: TextStyle(fontSize: 18)),
           OutlinedButton(
             onPressed: () async {

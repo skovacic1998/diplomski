@@ -16,37 +16,41 @@ class EvidentionScreen extends StatelessWidget {
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        child: SingleChildScrollView(
+        child: const SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8),
             child: Column(children: [
-              const CustomDateTimePicker(),
-              const Align(
+              CustomDateTimePicker(),
+              Align(
                   alignment: Alignment.topCenter,
                   child: ChildObjectListMultiSelect()),
-              Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  return ElevatedButton(
-                    onPressed: () async {
-                      Evidention evidention = Evidention(
-                          timestamp:
-                              ref.read(dateTimeProvider).millisecondsSinceEpoch,
-                          children: ref.read(selectedChildrenObjectsProvider));
-                      print(evidention.timestamp);
-                      print(evidention.children);
-                      await FirebaseFirestore.instance
-                          .collection('evidentions')
-                          .doc()
-                          .set(evidention.toMap());
-                    },
-                    child: const Text('Save evidention to database'),
-                  );
-                },
-              ),
             ]),
           ),
         ),
       ),
+      persistentFooterButtons: [
+        Center(
+          child: Consumer(
+                  builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                    return ElevatedButton(
+                      onPressed: () async {
+                        Evidention evidention = Evidention(
+                            timestamp:
+                                ref.read(dateTimeProvider).millisecondsSinceEpoch,
+                            children: ref.read(selectedChildrenObjectsProvider));
+                        print(evidention.timestamp);
+                        print(evidention.children);
+                        await FirebaseFirestore.instance
+                            .collection('evidentions')
+                            .doc()
+                            .set(evidention.toMap());
+                      },
+                      child: const Text('Save evidention to database'),
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 }

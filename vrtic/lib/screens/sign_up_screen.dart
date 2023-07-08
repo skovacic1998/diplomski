@@ -1,12 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vrtic/screens/sign_in_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../auth.dart';
 
 import '../reusable_widgets/reusable_widget.dart';
 import '../utils/color_utils.dart';
@@ -28,18 +25,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       TextEditingController();
   final TextEditingController _passwordTextEditingController =
       TextEditingController();
-
-  Future<void> createUserWithEmailAndPassword() async {
-    try {
-      await Auth().createUserWithEmailAndPassword(
-          email: _emailTextEditingController.text,
-          password: _passwordTextEditingController.text);
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

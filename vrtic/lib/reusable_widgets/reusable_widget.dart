@@ -202,7 +202,7 @@ class ChildObjectListSingleSelect extends StatelessWidget {
           return const Text('No children found.');
         }
         return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.3,
+          height: MediaQuery.of(context).size.height * 0.6,
           child: ListView.builder(
             shrinkWrap: true,
             itemCount: children.length,
@@ -281,7 +281,6 @@ class _CustomListTileForEvidention extends ConsumerWidget {
     final childSurname = child['surname'];
     final selectedItems = ref.watch(selectedChildrenProvider);
     final selectedChildren = ref.watch(selectedChildrenObjectsProvider);
-    final selectedItem = ref.watch(selectedChildIndexProvider);
     return ListTile(
       tileColor: selectedItems.contains(index)
           ? Colors.blue.withOpacity(0.5)
