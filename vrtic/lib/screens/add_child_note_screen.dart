@@ -50,29 +50,25 @@ class AddNoteForChild extends StatelessWidget {
       persistentFooterButtons: [
         Center(
           child: Consumer(
-                    builder:
-                        (BuildContext context, WidgetRef ref, Widget? child) {
-                      final child = ref.watch(selectedChildObjectProvider);
-                      final timestamp =
-                          ref.watch(dateTimeProvider).millisecondsSinceEpoch;
-                      return ElevatedButton(
-                        onPressed: () async {
-                          Note note = Note(
-                              noteText: noteEditingController.text,
-                              timestamp: timestamp,
-                              child: child);
-                          print(note.noteText);
-                          print(note.timestamp);
-                          print(note.child);
-                          await FirebaseFirestore.instance
-                              .collection('notes')
-                              .doc()
-                              .set(note.toMap());
-                        },
-                        child: const Text('Save note to database'),
-                      );
-                    },
-                  ),
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final child = ref.watch(selectedChildObjectProvider);
+              final timestamp =
+                  ref.watch(dateTimeProvider).millisecondsSinceEpoch;
+              return ElevatedButton(
+                onPressed: () async {
+                  Note note = Note(
+                      noteText: noteEditingController.text,
+                      timestamp: timestamp,
+                      child: child);
+                  await FirebaseFirestore.instance
+                      .collection('notes')
+                      .doc()
+                      .set(note.toMap());
+                },
+                child: const Text('Save note to database'),
+              );
+            },
+          ),
         )
       ],
     );

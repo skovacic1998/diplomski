@@ -9,15 +9,17 @@ class AllActivities extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar('Activities'),
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: const SingleChildScrollView(
-          child: Padding(
+      body: SingleChildScrollView(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: const Padding(
             padding: EdgeInsets.all(8),
             child: Column(
               children: [
-                ActivitiesList(),
+                Expanded(
+                  child: ActivitiesList(),
+                ),
               ],
             ),
           ),

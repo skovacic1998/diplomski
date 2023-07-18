@@ -136,7 +136,6 @@ class ChildObjectListMultiSelect extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('child').snapshots(),
       builder: (context, snapshot) {
@@ -274,7 +273,7 @@ class _CustomListTileForEvidention extends ConsumerWidget {
   const _CustomListTileForEvidention(this.index, this.child);
   final int index;
   final Map<String, dynamic> child;
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final childName = child['name'];
@@ -393,11 +392,11 @@ class _CustomCardForActivity extends ConsumerWidget {
         ),
         Row(
           children: [
-            const Text(
-              'Description: ',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Text(description)
+              const Text(
+                'Description: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            Expanded(child: Text(description))
           ],
         ),
         const SizedBox(
