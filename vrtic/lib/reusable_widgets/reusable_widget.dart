@@ -320,10 +320,12 @@ class _CustomListTileForEvidention extends ConsumerWidget {
           const SizedBox(
             width: 20,
           ),
-          checkChildSex(
-            child['sex'].toString(),
-          ),
         ],
+      ),
+      trailing: Icon(
+        checkChildSex(
+          child['sex'].toString(),
+        ),
       ),
     );
   }
@@ -357,10 +359,12 @@ class _CustomListTile extends ConsumerWidget {
           const SizedBox(
             width: 20,
           ),
-          checkChildSex(
-            child['sex'].toString(),
-          ),
         ],
+      ),
+      trailing: Icon(
+        checkChildSex(
+          child['sex'].toString(),
+        ),
       ),
     );
   }
@@ -392,10 +396,10 @@ class _CustomCardForActivity extends ConsumerWidget {
         ),
         Row(
           children: [
-              const Text(
-                'Description: ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+            const Text(
+              'Description: ',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             Expanded(child: Text(description))
           ],
         ),
@@ -454,8 +458,8 @@ class ChildObjectList extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(child['name']),
-                        checkChildSex(child['sex'].toString()),
                         Text(child['surname']),
+                        Icon(checkChildSex(child['sex'].toString())),
                       ],
                     ),
                   ),
@@ -547,11 +551,11 @@ class ChildObjectList extends StatelessWidget {
   }
 }
 
-Text checkChildSex(String sex) {
+IconData checkChildSex(String sex) {
   if (sex == "0") {
-    return const Text("Male");
+    return Icons.male;
   } else {
-    return const Text("Female");
+    return Icons.female; //const Text("Female");
   }
 }
 

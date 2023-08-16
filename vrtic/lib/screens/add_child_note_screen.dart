@@ -5,6 +5,7 @@ import 'package:vrtic/models/note.dart';
 import 'package:vrtic/providers/evidention_provider.dart';
 
 import '../reusable_widgets/reusable_widget.dart';
+import '../utils/color_utils.dart';
 import 'custom_datetime_picker.dart';
 
 class AddNoteForChild extends StatelessWidget {
@@ -63,7 +64,18 @@ class AddNoteForChild extends StatelessWidget {
                   await FirebaseFirestore.instance
                       .collection('notes')
                       .doc()
-                      .set(note.toMap());
+                      .set(note.toMap())
+                      .whenComplete(() {
+                    SnackBar snackBar = SnackBar(
+                      backgroundColor: hexStringToColor("D37E1A"),
+                      content: const Text(
+                        "Note saved to database",
+                        style: TextStyle(fontSize: 22, color: Colors.black),
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  });
                 },
                 child: const Text('Save note to database'),
               );
